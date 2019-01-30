@@ -12,6 +12,9 @@ public class DivCard {
 	public int getId(){
 		return id;
 	}
+	public void setId(int id){
+		this.id = id;
+	}
 	public String getCardName(){
 		return cardName;
 	}
@@ -20,6 +23,9 @@ public class DivCard {
 	}
 	public int getCardStackSize(){
 		return cardStackSize;
+	}
+	public void setCardStackSize(int cardStackSize){
+		this.cardStackSize = cardStackSize;
 	}
 	public String getItemFromCard(){
 		return itemFromCard;
