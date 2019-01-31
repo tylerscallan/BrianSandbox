@@ -40,7 +40,7 @@ public class HomeController {
 				.append("Service Online")
 				.append(System.lineSeparator())
 				.append("Current Time: ")
-				.append(Instant.now())
+				.append(Instant.now());
 				
 		return ResponseEntity.ok(stringBuilder.toString());
 	}
