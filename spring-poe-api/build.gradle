@@ -1,0 +1,105 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+project.version = '1.0.0'
+
+project.group = 'com.brian.poe.api'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+	spockVersion = '1.0-groovy-2.4'
+	groovyVersion = '2.4.7'
+	junitVersion = '4.12'
+}
+
+project.subprojects*.version = project.version
+project.subprojects*.group = project.group
+
+buildscript {
+
+	repositories {
+		jcenter()
+		mavenCentral()
+		maven { url 'https://plugins.gradle.org/m2/' }
+		maven { url 'http://repo.spring.io/plugins-release' }
+		maven { url "https://repo.spring.io/release" }
+	}
+
+	dependencies {
+		classpath(group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: '1.5.12.RELEASE')
+	}
+}
+
+wrapper {
+    gradleVersion = '4.10'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+
+configure(subprojects) {
+	
+	project.ext {
+	}
+
+	apply plugin: 'eclipse-wtp'
+	apply plugin: 'java'
+	apply plugin: 'groovy'
+	apply plugin: 'maven'
+
+	repositories {
+		maven { url mainUrl }
+	}
+
+	dependencies {
+		testCompile(group: 'org.spockframework', name: 'spock-core', version: spockVersion)
+		testCompile(group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion)
+		testCompile(group: 'junit', name: 'junit', version: junitVersion)
+		testCompile(group: 'cglib', name: 'cglib-nodep', version: '3.2.+')
+	}
+
+	jar {
+		version = project.version
+	
+        manifest {
+            attributes(
+                    'Implementation-Vendor': "Brian",
+                    'Implementation-Vendor-Id' : project.group,
+                    'Implementation-Title' : project.archivesBaseName,
+                    'Implementation-Alias' : project.archivesBaseName,
+                    'Implementation-Version' : project.version,
+                    'Source-Compatibility': project.sourceCompatibility,
+                    'Target-Compatibility': project.targetCompatibility,
+                    'Built-JDK' : System.getProperty('java.version'),                    
+                    'Build-Time' : new Date().format("MMM-dd-yyyy'T'HH:mm:ssZ"))
+        }
+    }
+	
+	test {
+		testLogging {
+			exceptionFormat = 'full'
+		}
+	}
+
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+	}
+
+	javadoc {
+		failOnError = false
+		classpath += configurations.compile
+	}
+
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		classifier = 'javadoc'
+		from javadoc.destinationDir
+	}
+
+	artifacts {
+		archives sourcesJar
+		archives javadocJar
+	}
+
+	[compileJava, compileTestJava]*.options.collect { options -> options.encoding = 'UTF-8' }
+}
